@@ -26,8 +26,14 @@ def insert_items(s: list[int], before: int, after: int) -> list[int]:
     >>> large_s3 is large_s
     True
     """
-    "*** YOUR CODE HERE ***"
-
+    index = 0
+    while index < len(s):
+        if s[index] == before:
+            s.insert(index + 1, after)
+            index += 2 # 添加之后跳过新插入的元素
+        else:
+            index += 1 # 如果没添加，继续查找下一个元素
+    return s
 
 def group_by(s: list[int], fn) -> dict[int, list[int]]:
     """Return a dictionary of lists that together contain the elements of s.
@@ -40,12 +46,12 @@ def group_by(s: list[int], fn) -> dict[int, list[int]]:
     {9: [-3, 3], 4: [-2, 2], 1: [-1, 1], 0: [0]}
     """
     grouped = {}
-    for ____ in ____:
-        key = ____
+    for x in s:
+        key = fn(x)
         if key in grouped:
-            ____
+            grouped[key].append(x)
         else:
-            grouped[key] = ____
+            grouped[key] = [x]
     return grouped
 
 
@@ -72,7 +78,11 @@ def count_occurrences(t: Iterator[int], n: int, x: int) -> int:
     >>> count_occurrences(v, 6, 6)
     2
     """
-    "*** YOUR CODE HERE ***"
+    count = 0
+    for _ in range(n):
+        if next(t) == x:
+            count += 1
+    return count
 
 
 from typing import Iterator  # "t: Iterator[int]" means t is an iterator that yields integers
@@ -97,8 +107,17 @@ def repeated(t: Iterator[int], k: int) -> int:
     2
     """
     assert k > 1
-    "*** YOUR CODE HERE ***"
-
+    count = 0
+    last_item = None
+    while True:
+        item = next(t)
+        if item == last_item:
+            count += 1
+        else:
+            last_item = item
+            count = 1
+        if count == k:
+            return item
 
 def sprout_leaves(t, leaves):
     """Sprout new leaves containing the labels in leaves at each leaf of
@@ -133,7 +152,10 @@ def sprout_leaves(t, leaves):
           1
           2
     """
-    "*** YOUR CODE HERE ***"
+    if is_leaf(t):
+        return tree(label(t), [tree(leaf) for leaf in leaves])
+    else:
+        return tree(label(t), [sprout_leaves(b, leaves) for b in branches(t)])
 
 
 def prune_leaves(t, vals):
@@ -160,7 +182,16 @@ def prune_leaves(t, vals):
         5
       6
     """
-    "*** YOUR CODE HERE ***"
+    if is_leaf(t) and (label(t) in vals):
+      return None
+    else:
+        new_branches = []
+        for b in branches(t):
+            new_branch = prune_leaves(b, vals)
+            if new_branch:
+                new_branches.append(new_branch)
+        return tree(label(t), new_branches)
+
 
 
 def pathsum(t, n):
@@ -171,7 +202,13 @@ def pathsum(t, n):
     >>> pathsum(my_tree, 5)  # A path that doesn't reach a leaf such as 2 -> 3 doesn't count
     False
     """
-    "*** YOUR CODE HERE ***"
+    if is_leaf(t):
+        return label(t) == n
+    else:
+        for b in branches(t):
+            if pathsum(b, n - label(t)):
+                return True
+        return False
 
 
 def sum_tree(t):
@@ -181,7 +218,13 @@ def sum_tree(t):
     >>> sum_tree(t)
     15
     """
-    "*** YOUR CODE HERE ***"
+    if is_leaf(t):
+        return label(t)
+    else:
+        total = label(t)
+        for b in branches(t):
+            total += sum_tree(b)
+        return total
 
 def balanced(t):
     """Checks if each branch has same sum of all elements and
@@ -197,8 +240,10 @@ def balanced(t):
     >>> balanced(t)
     False
     """
-    "*** YOUR CODE HERE ***"
-
+    for b in branches(t):
+        if sum_tree(branches(t)[0]) != sum_tree(b) or not balanced(b):
+            return False
+    return True
 
 def partial_reverse(s: list[int], start: int) -> None:
     """Reverse part of a list in-place, starting with start up to the end of
@@ -212,9 +257,11 @@ def partial_reverse(s: list[int], start: int) -> None:
     >>> a
     [1, 2, 7, 6, 5, 3, 4]
     """
-    "*** YOUR CODE HERE ***"
-
-
+    left, right = start, len(s) - 1
+    while left < right:
+        s[left], s[right] = s[right], s[left]
+        left += 1
+        right -= 1
 
 # Tree Data Abstraction
 
