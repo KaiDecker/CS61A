@@ -149,16 +149,16 @@ def divide(n, d):
     decimal_place = result.rest # 指向第一个小数位
     seen_remainders = {} # 记录余数及其对应的小数位节点
     while True:
-        digit = remainder // d
-        remainder = remainder % d
-        decimal_place.rest = Link(digit)
-        decimal_place = decimal_place.rest
+        digit = remainder // d # 计算当前小数位的数字
+        remainder = remainder % d # 更新余数
+        decimal_place.rest = Link(digit) # 创建新节点存储当前小数位
+        decimal_place = decimal_place.rest # 移动到下一个小数位
         if remainder == 0:
             break
         if remainder in seen_remainders: # 出现小数循环
             decimal_place.rest = seen_remainders[remainder]
             break
-        seen_remainders[remainder] = decimal_place
+        seen_remainders[remainder] = decimal_place # 记录当前余数和对应的小数位节点
         remainder *= 10
     return result
 
